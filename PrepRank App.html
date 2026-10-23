@@ -1,0 +1,245 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>PrepRank App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: Material 3 app bar plus a single scrolling column of cards, mirroring the Flutter build. */
+  :root {
+    --bg: #f1f3f8; --card: #f4f3fb; --fg: #1b1b1f; --fg2: #46464f;
+    --primary: #3f51d8; --on-primary: #ffffff; --pc: #e0e0ff; --on-pc: #00067a;
+    --sc: #e2e1f9; --on-sc: #1a1a2c;
+    --outline: #777680; --outline-v: #c7c5d0; --track: #dedcf0;
+    --err: #ba1a1a; --err-c: #ffdad6; --on-err-c: #410002; --ok: #2e7d32;
+    --font: Roboto, "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121318; --card: #1b1b21; --fg: #e4e1e9; --fg2: #c7c5d0;
+      --primary: #bcc2ff; --on-primary: #0d1a8f; --pc: #2a3bc0; --on-pc: #e0e0ff;
+      --sc: #444559; --on-sc: #e2e1f9; --outline: #918f9a; --outline-v: #46464f; --track: #35363f;
+      --err: #ffb4ab; --err-c: #93000a; --on-err-c: #ffdad6; --ok: #81c784; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121318; --card: #1b1b21; --fg: #e4e1e9; --fg2: #c7c5d0;
+    --primary: #bcc2ff; --on-primary: #0d1a8f; --pc: #2a3bc0; --on-pc: #e0e0ff;
+    --sc: #444559; --on-sc: #e2e1f9; --outline: #918f9a; --outline-v: #46464f; --track: #35363f;
+    --err: #ffb4ab; --err-c: #93000a; --on-err-c: #ffdad6; --ok: #81c784; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font: 400 14px/1.45 var(--font); }
+  #app { max-width: 760px; margin: 0 auto; min-height: 100%; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; text-align: left; }
+  button:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+  svg { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .appbar { height: 56px; padding-inline: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 5; }
+  .appbar h1 { font-size: 22px; font-weight: 400; margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .page { padding: 16px; }
+  .t-title { font-size: 16px; font-weight: 500; margin: 0 0 4px; }
+  .grey { color: var(--fg2); }
+  .intro { margin-bottom: 16px; }
+  .gap { height: 20px; }
+
+  .card { background: var(--card); border-radius: 12px; overflow: hidden; }
+  .tile { display: flex; align-items: center; gap: 16px; width: 100%; padding: 12px 16px; }
+  .tile .txt { flex: 1; min-width: 0; }
+  .tile .ttl { font-size: 16px; }
+  .tile .sub { color: var(--fg2); font-size: 14px; white-space: pre-line; }
+  .tile:hover { background: color-mix(in srgb, var(--primary) 8%, transparent); }
+  .mock { background: var(--pc); color: var(--on-pc); padding: 16px; margin-bottom: 20px; }
+  .mock .ttl { font-size: 22px; }
+  .mock .sub { color: var(--on-pc); }
+  .mock svg:first-child { width: 32px; height: 32px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--sc); color: var(--on-sc); display: grid; place-items: center; }
+  .list { display: grid; gap: 10px; }
+  .list .tile { padding: 8px 16px; }
+
+  .chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding-inline: 10px; border-radius: 8px; border: 1px solid var(--outline-v); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .chip svg { width: 18px; height: 18px; }
+  .chip.low { background: var(--err-c); color: var(--on-err-c); border-color: transparent; }
+  .bar { height: 4px; background: var(--track); }
+  .bar i { display: block; height: 100%; background: var(--primary); transition: width .2s; }
+  .pal { display: flex; gap: 6px; overflow-x: auto; padding: 10px 12px; }
+  .circ { flex: none; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--outline-v); font-weight: 500; font-size: 13px; }
+  .circ.fill { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+  .circ.cur { border: 2.5px solid var(--primary); }
+  .pal .circ { width: 32px; height: 32px; }
+  .qwrap { padding: 8px 16px 16px; }
+  .qnum { font-size: 14px; font-weight: 500; color: var(--fg2); margin-bottom: 8px; }
+  .qtext { font-size: 22px; line-height: 1.3; margin: 0 0 20px; font-weight: 400; }
+  .opt { display: flex; align-items: center; gap: 16px; width: 100%; padding: 12px 16px; margin-bottom: 10px; border-radius: 14px; background: var(--card); border: 1px solid var(--outline-v); font-size: 16px; }
+  .opt .circ { width: 30px; height: 30px; border: 1.5px solid var(--outline); }
+  .opt[aria-pressed="true"] { background: var(--pc); border: 2px solid var(--primary); padding: 11px 15px; }
+  .opt[aria-pressed="true"] .circ { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+  .foot { display: flex; gap: 8px; align-items: center; padding: 8px 16px 12px; flex-wrap: wrap; }
+  .foot .sp { flex: 1; }
+  .btn { height: 40px; padding-inline: 24px; border-radius: 20px; font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; }
+  .btn.filled { background: var(--primary); color: var(--on-primary); }
+  .btn.outl { border: 1px solid var(--outline); color: var(--primary); }
+  .btn.text { color: var(--primary); padding-inline: 12px; }
+  .btn:disabled { opacity: .38; cursor: default; }
+  .btn.block { width: 100%; margin-top: 12px; }
+
+  .score { background: var(--pc); color: var(--on-pc); text-align: center; padding: 20px; margin-bottom: 4px; }
+  .score .l { font-weight: 500; }
+  .score .big { font-size: 45px; font-weight: 700; line-height: 1.2; }
+  .stats { display: flex; padding-block: 16px; margin-bottom: 16px; margin-top: 4px; }
+  .stats div { flex: 1; text-align: center; font-size: 12px; color: var(--fg2); }
+  .stats b { display: block; font-size: 24px; font-weight: 700; }
+  .rev { margin-bottom: 8px; }
+  .rev summary { list-style: none; display: flex; gap: 16px; align-items: center; padding: 12px 16px; cursor: pointer; }
+  .rev summary::-webkit-details-marker { display: none; }
+  .rev summary span { flex: 1; min-width: 0; font-size: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .rev .body { padding: 0 16px 16px; display: grid; gap: 4px; }
+  .rev .body .why { margin-top: 4px; color: var(--fg2); }
+  .rev[open] summary span { -webkit-line-clamp: unset; }
+
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; padding: 16px; z-index: 20; }
+  .dlg { background: var(--card); border-radius: 28px; padding: 24px; max-width: 360px; width: 100%; }
+  .dlg h2 { margin: 0 0 12px; font-size: 24px; font-weight: 400; }
+  .dlg p { margin: 0 0 24px; color: var(--fg2); font-size: 14px; }
+  .dlg div { display: flex; justify-content: flex-end; gap: 8px; }
+  @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+
+<div id="app"></div>
+
+<script>
+(function () {
+  var NEG = 0.25, SEC = 60;
+  var IC = {
+    calc: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg>',
+    brain: '<svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="6"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5M12 16.5v.5M9 20h6"/></svg>',
+    globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
+    book: '<svg viewBox="0 0 24 24"><path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14"/></svg>',
+    clip: '<svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h6"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    chev: '<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+    down: '<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+    timer: '<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>',
+    ok: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>',
+    no: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>',
+    skip: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>'
+  };
+
+  var SUBS = [
+    { id: 'quant', name: 'Quantitative Aptitude', blurb: 'Percentages, ratios, interest, speed', icon: 'calc', qs: [
+      ['What is 15% of 240?', ['32', '36', '38', '40'], 1, '15% of 240 = 0.15 × 240 = 36.'],
+      ['A train runs at 60 km/h. How far does it go in 45 minutes?', ['40 km', '45 km', '50 km', '55 km'], 1, 'Distance = 60 × 0.75 = 45 km.'],
+      ['Simple interest on ₹5,000 at 8% per annum for 3 years is:', ['₹1,000', '₹1,200', '₹1,400', '₹1,500'], 1, 'SI = 5000 × 8 × 3 / 100 = ₹1,200.'],
+      ['Two numbers are in the ratio 3:5 and their sum is 64. The larger number is:', ['24', '32', '40', '44'], 2, 'One part = 64 / 8 = 8, so the larger is 5 × 8 = 40.'],
+      ['The average of 12, 18, 24, 30 and 36 is:', ['20', '22', '24', '26'], 2, 'Sum = 120, and 120 / 5 = 24.']
+    ]},
+    { id: 'reasoning', name: 'Logical Reasoning', blurb: 'Series, relations, coding, direction', icon: 'brain', qs: [
+      ['Find the next term: 2, 6, 12, 20, 30, ?', ['38', '40', '42', '44'], 2, 'Differences are 4, 6, 8, 10, so the next is 30 + 12 = 42.'],
+      ['A is the sister of B, and B is the father of C. How is A related to C?', ['Mother', 'Aunt', 'Grandmother', 'Cousin'], 1, 'A is the sister of C’s father, so A is the aunt.'],
+      ['Pick the odd one out.', ['Apple', 'Mango', 'Carrot', 'Banana'], 2, 'Carrot is a vegetable; the others are fruits.'],
+      ['If CAT is coded as 24 (A=1, B=2 … added up), what is DOG?', ['24', '26', '28', '30'], 1, 'CAT = 3+1+20 = 24. DOG = 4+15+7 = 26.'],
+      ['A man walks 5 km north, turns right and walks 3 km, then turns right and walks 5 km. How far is he from the start?', ['3 km', '5 km', '8 km', '13 km'], 0, 'The north and south legs cancel, leaving the 3 km east leg.']
+    ]},
+    { id: 'gk', name: 'General Awareness', blurb: 'Polity, geography, science, economy', icon: 'globe', qs: [
+      ['Who was the Chairman of the Drafting Committee of the Indian Constitution?', ['Jawaharlal Nehru', 'Dr. B. R. Ambedkar', 'Dr. Rajendra Prasad', 'Sardar Patel'], 1, 'Dr. B. R. Ambedkar chaired the Drafting Committee.'],
+      ['What is the capital of Australia?', ['Sydney', 'Melbourne', 'Canberra', 'Perth'], 2, 'Canberra is the capital, not Sydney.'],
+      ['Which Article of the Indian Constitution abolishes untouchability?', ['Article 14', 'Article 15', 'Article 17', 'Article 21'], 2, 'Article 17 abolishes untouchability.'],
+      ['Which planet is known as the Red Planet?', ['Venus', 'Mars', 'Jupiter', 'Mercury'], 1, 'Iron oxide on its surface gives Mars its red colour.'],
+      ['The Reserve Bank of India was established in:', ['1925', '1935', '1947', '1950'], 1, 'The RBI began operations on 1 April 1935.']
+    ]},
+    { id: 'english', name: 'English Language', blurb: 'Vocabulary, grammar, spelling', icon: 'book', qs: [
+      ['Choose the synonym of ABUNDANT.', ['Scarce', 'Plentiful', 'Rare', 'Tiny'], 1, 'Abundant means existing in large quantities.'],
+      ['Choose the antonym of BRAVE.', ['Bold', 'Fearless', 'Cowardly', 'Strong'], 2, 'Cowardly is the opposite of brave.'],
+      ['Fill in the blank: She ___ to school every day.', ['go', 'goes', 'going', 'gone'], 1, 'A third person singular subject takes “goes”.'],
+      ['One word for “a person who loves books”:', ['Philanthropist', 'Bibliophile', 'Misanthrope', 'Pedant'], 1, 'A bibliophile loves or collects books.'],
+      ['Choose the correct spelling.', ['Acommodation', 'Accomodation', 'Accommodation', 'Acomodation'], 2, 'Accommodation has a double c and a double m.']
+    ]}
+  ];
+
+  var app = document.getElementById('app'), S = null, timer = null, best = {};
+  try { best = JSON.parse(localStorage.getItem('preprank-m-best') || '{}') || {}; } catch (e) {}
+
+  function clock(s) { return ('0' + Math.floor(s / 60)).slice(-2) + ':' + ('0' + s % 60).slice(-2); }
+  function marks(v) { return (Math.round(v * 100) / 100).toFixed(2).replace(/\.?0+$/, ''); }
+  function bestOf(id) { return best[id] == null ? '' : 'Best: ' + marks(best[id]); }
+  function all() { return [].concat.apply([], SUBS.map(function (s) { return s.qs; })); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function tally() { var c = 0, w = 0; S.qs.forEach(function (q, i) { if (S.ans[i] === q[2]) c++; else if (S.ans[i] !== null) w++; }); return { c: c, w: w }; }
+  function on(root, sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (el) { el.onclick = function () { fn(el); }; }); }
+
+  function home() {
+    clearInterval(timer); S = null;
+    var qs = all(), h = '<div class="appbar"><h1>PrepRank</h1></div><div class="page">' +
+      '<p class="t-title">Practice for SSC, Banking, Railways and State exams</p>' +
+      '<p class="grey intro">Timed tests. +1 for a correct answer, −' + marks(NEG) + ' for a wrong one.</p>' +
+      '<div class="card mock"><button class="tile" id="mock" style="padding:0">' + IC.clip +
+      '<div class="txt"><div class="ttl">Full Mock Test</div><div class="sub">' + qs.length + ' questions, ' + clock(qs.length * SEC) + ' minutes, all subjects mixed' + (best.mock != null ? '\n' + bestOf('mock') : '') + '</div></div>' + IC.arrow + '</button></div>' +
+      '<p class="t-title">Subject tests</p><div class="list">';
+    SUBS.forEach(function (s) {
+      h += '<div class="card"><button class="tile" data-id="' + s.id + '"><span class="avatar">' + IC[s.icon] + '</span><div class="txt"><div class="ttl">' + s.name +
+        '</div><div class="sub">' + s.blurb + '\n' + s.qs.length + ' questions, ' + s.qs.length + ' min  ' + bestOf(s.id) + '</div></div>' + IC.chev + '</button></div>';
+    });
+    app.innerHTML = h + '</div></div>';
+    document.getElementById('mock').onclick = function () { start('mock', 'Full Mock Test', shuffle(qs)); };
+    on(app, '.list .tile', function (b) { var s = SUBS.filter(function (x) { return x.id === b.getAttribute('data-id'); })[0]; start(s.id, s.name, s.qs.slice()); });
+    window.scrollTo(0, 0);
+  }
+
+  function start(id, title, qs) {
+    S = { id: id, title: title, qs: qs, ans: qs.map(function () { return null; }), cur: 0, total: qs.length * SEC, left: qs.length * SEC, ask: false };
+    clearInterval(timer);
+    timer = setInterval(function () {
+      if (--S.left <= 0) return finish();
+      var c = document.getElementById('clk');
+      if (c) { c.querySelector('b').textContent = clock(S.left); c.className = 'chip' + (S.left < 60 ? ' low' : ''); }
+    }, 1000);
+    quiz(); window.scrollTo(0, 0);
+  }
+
+  function quiz() {
+    var n = S.qs.length, q = S.qs[S.cur], done = S.ans.filter(function (a) { return a !== null; }).length;
+    var h = '<div class="appbar"><h1>' + S.title + '</h1><span id="clk" class="chip' + (S.left < 60 ? ' low' : '') + '" role="timer">' + IC.timer + '<b>' + clock(S.left) + '</b></span></div>' +
+      '<div class="bar"><i style="width:' + done / n * 100 + '%"></i></div><div class="pal">';
+    for (var i = 0; i < n; i++) h += '<button class="circ' + (S.ans[i] !== null ? ' fill' : '') + (i === S.cur ? ' cur' : '') + '" data-i="' + i + '" aria-label="Question ' + (i + 1) + '">' + (i + 1) + '</button>';
+    h += '</div><div class="qwrap"><div class="qnum">Question ' + (S.cur + 1) + ' of ' + n + '</div><h2 class="qtext">' + q[0] + '</h2>';
+    q[1].forEach(function (o, k) { h += '<button class="opt" data-k="' + k + '" aria-pressed="' + (S.ans[S.cur] === k) + '"><span class="circ">' + 'ABCD'[k] + '</span><span>' + o + '</span></button>'; });
+    h += '</div><div class="foot"><button class="btn outl" id="prev"' + (S.cur === 0 ? ' disabled' : '') + '>Previous</button>' +
+      '<button class="btn text" id="clr"' + (S.ans[S.cur] === null ? ' disabled' : '') + '>Clear</button><span class="sp"></span>' +
+      (S.cur < n - 1 ? '<button class="btn filled" id="next">Next</button>' : '<button class="btn filled" id="sub">Submit</button>') + '</div>';
+    if (S.ask) {
+      var todo = n - done;
+      h += '<div class="scrim"><div class="dlg" role="alertdialog" aria-label="Submit test"><h2>Submit test?</h2><p>' +
+        (todo ? todo + (todo === 1 ? ' question is' : ' questions are') + ' still unanswered.' : 'You have answered every question.') +
+        '</p><div><button class="btn text" id="no">Keep going</button><button class="btn filled" id="yes">Submit</button></div></div></div>';
+    }
+    app.innerHTML = h;
+    on(app, '.pal .circ', function (b) { S.cur = +b.getAttribute('data-i'); quiz(); });
+    on(app, '.opt', function (b) { S.ans[S.cur] = +b.getAttribute('data-k'); quiz(); });
+    var bind = function (id, fn) { var el = document.getElementById(id); if (el) el.onclick = fn; };
+    bind('prev', function () { S.cur--; quiz(); }); bind('next', function () { S.cur++; quiz(); });
+    bind('clr', function () { S.ans[S.cur] = null; quiz(); });
+    bind('sub', function () { S.ask = true; quiz(); }); bind('no', function () { S.ask = false; quiz(); }); bind('yes', finish);
+  }
+
+  function finish() {
+    clearInterval(timer);
+    var t = tally(), n = S.qs.length, score = t.c - t.w * NEG, skipped = n - t.c - t.w;
+    if (best[S.id] == null || score > best[S.id]) { best[S.id] = score; try { localStorage.setItem('preprank-m-best', JSON.stringify(best)); } catch (e) {} }
+    var acc = t.c + t.w ? Math.round(t.c / (t.c + t.w) * 100) : 0, used = S.total - Math.max(S.left, 0);
+    var h = '<div class="appbar"><h1>' + S.title + ': result</h1></div><div class="page">' +
+      '<div class="card score"><div class="l">Your score</div><div class="big">' + marks(score) + ' / ' + n + '</div><div>Accuracy ' + acc + '%  |  Time ' + clock(used) + '</div></div>' +
+      '<div class="card stats"><div><b style="color:var(--ok)">' + t.c + '</b>Correct</div><div><b style="color:var(--err)">' + t.w + '</b>Wrong</div><div><b>' + skipped + '</b>Skipped</div></div>' +
+      '<p class="t-title" style="margin-bottom:8px">Review answers</p>';
+    S.qs.forEach(function (q, i) {
+      var a = S.ans[i], k = a === null ? 'skip' : (a === q[2] ? 'ok' : 'no'), col = k === 'ok' ? 'var(--ok)' : k === 'no' ? 'var(--err)' : 'var(--fg2)';
+      h += '<details class="card rev"><summary><span style="color:' + col + ';flex:none;display:flex">' + IC[k] + '</span><span>Q' + (i + 1) + '. ' + q[0] + '</span>' + IC.down + '</summary><div class="body">' +
+        '<div style="color:' + col + '">' + (a === null ? 'You skipped this question.' : 'Your answer: ' + q[1][a]) + '</div><div>Correct answer: ' + q[1][q[2]] + '</div><div class="why">' + q[3] + '</div></div></details>';
+    });
+    app.innerHTML = h + '<button class="btn filled block" id="home">Back to home</button></div>';
+    document.getElementById('home').onclick = home; window.scrollTo(0, 0);
+  }
+
+  home();
+})();
+</script>
+
+</body></html>
